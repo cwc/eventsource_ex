@@ -35,14 +35,21 @@ defmodule EventsourceEx do
     {:ok, pid}
   end
 
-  defp receive_loop(parent, message \\ %EventsourceEx.Message{}) do
+  defp receive_loop(parent, message \\ %EventsourceEx.Message{}, prev_chunk \\ nil) do
     receive do
       %{chunk: data} ->
-        data = String.split(data, "\n")
+        data = if prev_chunk, do: prev_chunk <> data, else: data
 
-        message = parse_stream(data, parent, message)
+        if String.ends_with?(data, "\n") do
+          data = String.split(data, "\n")
 
-        receive_loop(parent, message)
+          message = parse_stream(data, parent, message)
+
+          receive_loop(parent, message)
+        else
+          # Chunk didn't end with newline - assume data was cut and append next chunk
+          receive_loop(parent, message, data)
+        end
 
       :stop -> :ok
       _ -> receive_loop(parent, message)
