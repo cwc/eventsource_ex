@@ -27,7 +27,7 @@ defmodule EventsourceEx do
     parent = opts[:stream_to] || self
 
     pid = spawn_link fn -> 
-      HTTPoison.get! url, [], stream_to: self
+      HTTPoison.get!(url, [], stream_to: self, recv_timeout: :infinity)
 
       receive_loop(parent)
     end
