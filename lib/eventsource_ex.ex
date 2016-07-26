@@ -89,8 +89,8 @@ defmodule EventsourceEx do
   end
 
   defp dispatch(parent, message) do
-    # Remove single trailing \n from message.data
-    message = Map.put(message, :data, message.data |> String.replace_suffix("\n", ""))
+    message = Map.put(message, :data, message.data |> String.replace_suffix("\n", "")) # Remove single trailing \n from message.data if necessary
+    |> Map.put(:dispatch_ts, DateTime.utc_now) # Add dispatch timestamp
    
     send(parent, message)
   end
