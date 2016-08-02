@@ -51,10 +51,10 @@ defmodule EventsourceEx do
           receive_loop(parent, message, data)
         end
 
+      %HTTPoison.AsyncEnd{} -> :ok # Terminate when request ends
+
       :stop -> :ok
-      _ -> receive_loop(parent, message)
-    after
-      1000 -> receive_loop(parent)
+      _ -> receive_loop(parent, message, prev_chunk)
     end
   end
 
