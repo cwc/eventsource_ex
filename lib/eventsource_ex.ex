@@ -1,61 +1,47 @@
 defmodule EventsourceEx do
-  use Application
+  use GenServer
   require Logger
-
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      # Define workers and child supervisors to be supervised
-      # worker(EventsourceEx.Worker, [arg1, arg2, arg3]),
-    ]
-
-    # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: EventsourceEx.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
 
   @spec new(String.t, Keyword.t) :: {:ok, pid}
   def new(url, opts \\ []) do
-    start_link(url, opts)
-  end
-
-  def start_link(url, opts \\ []) do
     parent = opts[:stream_to] || self
+    opts = Keyword.put(opts, :stream_to, parent)
+    |> Keyword.put(:url, url)
 
-    pid = spawn_link fn -> 
-      HTTPoison.get!(url, [], stream_to: self, recv_timeout: :infinity)
-
-      receive_loop(parent)
-    end
-
-    {:ok, pid}
+    GenServer.start(__MODULE__, opts, opts)
   end
 
-  defp receive_loop(parent, message \\ %EventsourceEx.Message{}, prev_chunk \\ nil) do
-    receive do
-      %{chunk: data} ->
-        data = if prev_chunk, do: prev_chunk <> data, else: data
+  def init(opts \\ []) do
+    url = opts[:url]
+    parent = opts[:stream_to]
 
-        if String.ends_with?(data, "\n") do
-          data = String.split(data, "\n")
+    HTTPoison.get!(url, [], stream_to: self, recv_timeout: :infinity)
 
-          message = parse_stream(data, parent, message)
+    {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
+  end
 
-          receive_loop(parent, message)
-        else
-          # Chunk didn't end with newline - assume data was cut and append next chunk
-          receive_loop(parent, message, data)
-        end
+  def handle_info(%{chunk: data}, %{parent: parent, message: message, prev_chunk: prev_chunk}) do
+    data = if prev_chunk, do: prev_chunk <> data, else: data
 
-      %HTTPoison.AsyncEnd{} -> :ok # Terminate when request ends
+    if String.ends_with?(data, "\n") do
+      data = String.split(data, "\n")
 
-      :stop -> :ok
-      _ -> receive_loop(parent, message, prev_chunk)
+      message = parse_stream(data, parent, message)
+
+      {:noreply, %{parent: parent, message: message, prev_chunk: nil}}
+    else
+      # Chunk didn't end with newline - assume data was cut and append next chunk
+      {:noreply, %{parent: parent, message: message, prev_chunk: data}}
     end
+  end
+
+  def handle_info(%HTTPoison.AsyncEnd{}, state) do
+    {:stop, :connection_terminated, state}
+  end
+
+  def handle_info(_msg, state) do
+    # Ignore unhandled messages
+    {:noreply, state}
   end
 
   defp parse_stream(["" | data], parent, message) do
