@@ -4,7 +4,7 @@ defmodule EventsourceEx do
 
   @spec new(String.t, Keyword.t) :: {:ok, pid}
   def new(url, opts \\ []) do
-    parent = opts[:stream_to] || self
+    parent = opts[:stream_to] || self()
     opts = Keyword.put(opts, :stream_to, parent)
     |> Keyword.put(:url, url)
 
@@ -15,7 +15,7 @@ defmodule EventsourceEx do
     url = opts[:url]
     parent = opts[:stream_to]
 
-    HTTPoison.get!(url, [], stream_to: self, recv_timeout: :infinity)
+    HTTPoison.get!(url, [], stream_to: self(), recv_timeout: :infinity)
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end
