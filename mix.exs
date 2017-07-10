@@ -2,12 +2,18 @@ defmodule EventsourceEx.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :eventsource_ex,
-     version: "0.0.1",
-     elixir: "~> 1.2",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app: :eventsource_ex,
+      version: "0.0.1",
+      elixir: "~> 1.3.4",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps(),
+      package: package(),
+      description: "An EventSource (Server-Sent Events) client.",
+      name: "EventsourceEx",
+      source_url: "https://github.com/cwc/eventsource_ex"
+    ]
   end
 
   # Configuration for the OTP application
@@ -28,7 +34,17 @@ defmodule EventsourceEx.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpoison, "~> 0.11.2"}
+      {:httpoison, "~> 0.11.2"},
+      {:ex_doc, ">= 0.0.0", only: :dev}
+    ]
+  end
+
+  defp package do
+    [
+      name: :eventsource_ex,
+      maintainers: ["cwc"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/cwc/eventsource_ex"}
     ]
   end
 end

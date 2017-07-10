@@ -4,8 +4,6 @@ An Elixir EventSource (Server-Sent Events) client
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
   Add eventsource_ex to your list of dependencies in `mix.exs`:
 
         def deps do
