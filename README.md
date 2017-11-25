@@ -7,7 +7,7 @@ An Elixir EventSource (Server-Sent Events) client
   Add eventsource_ex to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:eventsource_ex, "~> 0.0.1"}]
+          [{:eventsource_ex, "~> x.x.x"}]
         end
 
 ## Usage
