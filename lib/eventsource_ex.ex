@@ -13,9 +13,10 @@ defmodule EventsourceEx do
 
   def init(opts \\ []) do
     url = opts[:url]
+    headers = opts[:headers]
     parent = opts[:stream_to]
 
-    HTTPoison.get!(url, [], stream_to: self(), recv_timeout: :infinity)
+    HTTPoison.get!(url, headers, stream_to: self(), recv_timeout: :infinity)
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end
