@@ -24,9 +24,11 @@ defmodule EventsourceEx do
     headers = opts[:headers]
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
+    force_redirect = opts[:force_redirect]
     ssl = optional(opts[:ssl])
 
-    HTTPoison.get!(url, headers, [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect, recv_timeout: :infinity])
+    HTTPoison.get!(url, headers, [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect, force_redirect: force_redirect,
+                                  recv_timeout: :infinity])
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end
