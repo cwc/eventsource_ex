@@ -11,21 +11,15 @@ defmodule EventsourceEx do
     GenServer.start(__MODULE__, opts, opts)
   end
 
-  defp optional(val) do
-    if val != nil do 
-      val
-    else 
-      false
-    end
-  end
 
+  # todo build a list of args that exist
   def init(opts \\ []) do
     url = opts[:url]
     headers = opts[:headers]
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
     force_redirect = opts[:force_redirect]
-    ssl = optional(opts[:ssl])
+    ssl = opts[:ssl]
 
     HTTPoison.get!(url, headers, [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect, force_redirect: force_redirect,
                                   recv_timeout: :infinity])
