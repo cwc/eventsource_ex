@@ -46,6 +46,11 @@ defmodule EventsourceEx do
     {:stop, :connection_terminated, state}
   end
 
+  def handle_info(%HTTPoison.AsyncRedirect[headers: headers, to: url ]) do
+    Logger.debug("attempting to follow redirect to #{url}")
+    HTTPoison.get!(url,headers,[])
+  end
+
   def handle_info(_msg, state) do
     # Ignore unhandled messages
     {:noreply, state}
