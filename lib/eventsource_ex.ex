@@ -11,25 +11,26 @@ defmodule EventsourceEx do
     GenServer.start(__MODULE__, opts, opts)
   end
 
-
-  # todo build a list of args that exist
-  def init(opts \\ []) do
+  defp parse_options(opts) do
     url = opts[:url]
     headers = opts[:headers]
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
-    force_redirect = opts[:force_redirect]
     ssl = opts[:ssl]
+    options = [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect,
+                                  recv_timeout: :infinity]
 
-    HTTPoison.get!(url, headers, [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect, force_redirect: force_redirect,
-                                  recv_timeout: :infinity])
+    {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}
+  end
+    
+
+
+  # todo build a list of args that exist
+  def init(opts \\ []) do
+    {url, headers, parent, options} = parse_options(opts)
+    HTTPoison.get!(url, headers, options)
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
-  end
-
-  def handle_info(%HTTPoison.AsyncRedirect{headers: headers, to: url }) do
-    Logger.debug("attempting to follow redirect to #{url}")
-    HTTPoison.get!(url,headers,[])
   end
 
   def handle_info(%{chunk: data}, %{parent: parent, message: message, prev_chunk: prev_chunk}) do
