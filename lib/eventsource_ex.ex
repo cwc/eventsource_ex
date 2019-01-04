@@ -27,6 +27,11 @@ defmodule EventsourceEx do
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end
 
+  def handle_info(%HTTPoison.AsyncRedirect{headers: headers, to: url }) do
+    Logger.debug("attempting to follow redirect to #{url}")
+    HTTPoison.get!(url,headers,[])
+  end
+
   def handle_info(%{chunk: data}, %{parent: parent, message: message, prev_chunk: prev_chunk}) do
     data = if prev_chunk, do: prev_chunk <> data, else: data
 
@@ -44,11 +49,6 @@ defmodule EventsourceEx do
 
   def handle_info(%HTTPoison.AsyncEnd{}, state) do
     {:stop, :connection_terminated, state}
-  end
-
-  def handle_info(%HTTPoison.AsyncRedirect{headers: headers, to: url }) do
-    Logger.debug("attempting to follow redirect to #{url}")
-    HTTPoison.get!(url,headers,[])
   end
 
   def handle_info(_msg, state) do
