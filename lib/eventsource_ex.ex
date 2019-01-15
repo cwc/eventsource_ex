@@ -8,7 +8,7 @@ defmodule EventsourceEx do
     opts = Keyword.put(opts, :stream_to, parent)
     |> Keyword.put(:url, url)
 
-    GenServer.start(__MODULE__, opts, opts)
+    GenServer.start_link(__MODULE__, opts, opts)
   end
 
   defp parse_options(opts) do
@@ -17,7 +17,7 @@ defmodule EventsourceEx do
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
     ssl = opts[:ssl]
-    options = [stream_to: parent, ssl: ssl, follow_redirect: follow_redirect,
+    options = [stream_to: self(), ssl: ssl, follow_redirect: follow_redirect,
                                   recv_timeout: :infinity]
 
     {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}

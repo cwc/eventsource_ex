@@ -5,7 +5,7 @@ defmodule EventsourceEx.Mixfile do
     [
       app: :eventsource_ex,
       version: "0.0.2",
-      elixir: "~> 1.3",
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
