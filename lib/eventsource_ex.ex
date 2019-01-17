@@ -23,9 +23,6 @@ defmodule EventsourceEx do
     {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}
   end
     
-
-
-  # todo build a list of args that exist
   def init(opts \\ []) do
     {url, headers, parent, options} = parse_options(opts)
     HTTPoison.get!(url, headers, options)
