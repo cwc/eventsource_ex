@@ -17,7 +17,7 @@ defmodule EventsourceEx do
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
     ssl = opts[:ssl]
-    options = [stream_to: self(), ssl: ssl, follow_redirect: follow_redirect,
+    http_options = [stream_to: self(), ssl: ssl, follow_redirect: follow_redirect,
                                   recv_timeout: :infinity]
 
     {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}
