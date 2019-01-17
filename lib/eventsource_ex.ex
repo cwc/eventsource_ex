@@ -8,15 +8,24 @@ defmodule EventsourceEx do
     opts = Keyword.put(opts, :stream_to, parent)
     |> Keyword.put(:url, url)
 
-    GenServer.start(__MODULE__, opts, opts)
+    GenServer.start_link(__MODULE__, opts, opts)
   end
 
-  def init(opts \\ []) do
+  defp parse_options(opts) do
     url = opts[:url]
     headers = opts[:headers]
     parent = opts[:stream_to]
+    follow_redirect = opts[:follow_redirect]
+    ssl = opts[:ssl]
+    http_options = [stream_to: self(), ssl: ssl, follow_redirect: follow_redirect,
+                                  recv_timeout: :infinity]
 
-    HTTPoison.get!(url, headers, stream_to: self(), recv_timeout: :infinity)
+    {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}
+  end
+    
+  def init(opts \\ []) do
+    {url, headers, parent, options} = parse_options(opts)
+    HTTPoison.get!(url, headers, options)
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end

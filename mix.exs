@@ -5,7 +5,7 @@ defmodule EventsourceEx.Mixfile do
     [
       app: :eventsource_ex,
       version: "0.0.2",
-      elixir: "~> 1.3",
+      elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       deps: deps(),
@@ -34,7 +34,7 @@ defmodule EventsourceEx.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:httpoison, "~> 0.11.2"},
+      {:httpoison, "~> 1.5"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
