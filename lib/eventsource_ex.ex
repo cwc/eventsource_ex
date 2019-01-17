@@ -20,7 +20,7 @@ defmodule EventsourceEx do
     http_options = [stream_to: self(), ssl: ssl, follow_redirect: follow_redirect,
                                   recv_timeout: :infinity]
 
-    {url, headers, parent, Enum.filter(options, fn({_,val}) -> val != nil end)}
+    {url, headers, parent, Enum.filter(http_options, fn({_,val}) -> val != nil end)}
   end
     
   def init(opts \\ []) do
