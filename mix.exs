@@ -35,7 +35,9 @@ defmodule EventsourceEx.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 1.5"},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false, optional: true},
+      {:dialyxir, "~> 0.5", only: :dev, runtime: false, optional: true},
     ]
   end
 

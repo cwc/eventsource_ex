@@ -65,7 +65,6 @@ defmodule EventsourceEx do
     parse_stream(data, parent, message)
   end
   defp parse_stream([], _, message), do: message
-  defp parse_stream(data, _, _), do: raise ArgumentError, message: "Unparseable data: #{data}"
 
   defp parse(raw_line, message) do
     case raw_line do
