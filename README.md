@@ -19,3 +19,7 @@ An Elixir EventSource (Server-Sent Events) client
     %EventsourceEx.Message{data: "2", event: "message", id: nil}
     %EventsourceEx.Message{data: "3", event: "message", id: nil}
     :ok
+
+## Troubleshooting
+
+Please note, that browsers are limited to 6 connections per domain. [More info]()https://stackoverflow.com/questions/5195452/websockets-vs-server-sent-events-eventsource).
