@@ -4,7 +4,7 @@ defmodule EventsourceEx.Mixfile do
   def project do
     [
       app: :eventsource_ex,
-      version: "0.0.2",
+      version: "1.0.0",
       elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -36,7 +36,7 @@ defmodule EventsourceEx.Mixfile do
     [
       {:httpoison, "~> 1.5"},
 
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false, optional: true},
+      {:ex_doc, "~> 0.12.0", only: :dev, runtime: false, optional: true},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false, optional: true},
     ]
   end
