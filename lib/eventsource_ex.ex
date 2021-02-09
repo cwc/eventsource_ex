@@ -13,7 +13,7 @@ defmodule EventsourceEx do
 
   defp parse_options(opts) do
     url = opts[:url]
-    headers = opts[:headers]
+    headers = opts[:headers] || []
     parent = opts[:stream_to]
     follow_redirect = opts[:follow_redirect]
     hackney_opts = opts[:hackney]
@@ -23,7 +23,7 @@ defmodule EventsourceEx do
 
     {url, headers, parent, Enum.filter(http_options, fn({_,val}) -> val != nil end)}
   end
-    
+
   def init(opts \\ []) do
     {url, headers, parent, options} = parse_options(opts)
     Logger.debug(fn -> "starting stream with http options: #{inspect options}" end)
@@ -88,7 +88,7 @@ defmodule EventsourceEx do
   defp dispatch(parent, message) do
     message = Map.put(message, :data, message.data |> String.replace_suffix("\n", "")) # Remove single trailing \n from message.data if necessary
     |> Map.put(:dispatch_ts, DateTime.utc_now) # Add dispatch timestamp
-   
+
     send(parent, message)
   end
 end
