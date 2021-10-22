@@ -38,6 +38,7 @@ defmodule EventsourceEx.Mixfile do
 
       {:ex_doc, "~> 0.12.0", only: :dev, runtime: false, optional: true},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false, optional: true},
+      {:mox, "~> 1.0", only: :test},
     ]
   end
 
