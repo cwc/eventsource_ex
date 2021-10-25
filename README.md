@@ -2,6 +2,8 @@
 
 An Elixir EventSource (Server-Sent Events) client
 
+[![EventsourceEx on Hex](https://img.shields.io/hexpm/v/eventsource_ex?style=flat-square)](https://hex.pm/packages/eventsource_ex)
+
 ## Installation
 
   Add eventsource_ex to your list of dependencies in `mix.exs`:
