@@ -20,7 +20,7 @@ defmodule EventsourceEx.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :httpoison]]
+    [extra_applications: [:logger]]
   end
 
   # Dependencies can be Hex packages:
@@ -38,6 +38,7 @@ defmodule EventsourceEx.Mixfile do
 
       {:ex_doc, "~> 0.12.0", only: :dev, runtime: false, optional: true},
       {:dialyxir, "~> 0.5", only: :dev, runtime: false, optional: true},
+      {:mox, "~> 1.0", only: :test},
     ]
   end
 
