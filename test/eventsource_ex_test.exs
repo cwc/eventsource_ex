@@ -16,7 +16,13 @@ defmodule EventsourceExTest do
         "event: message\n",
         "data: 1\n\n",
         "event: message\n",
-        "data: 2\n\n"
+        "data: 2\n\n",
+        "id: 3\n",
+        "data: 3\n\n",
+        "id: 4\ndata: 4",
+        "\n",
+        "data: fi",
+        "ve\n\n"
       ]
       |> Enum.map(&send(target, %{chunk: &1}))
     end)
@@ -28,6 +34,9 @@ defmodule EventsourceExTest do
 
     assert_receive(%EventsourceEx.Message{data: "1", event: "message"})
     assert_receive(%EventsourceEx.Message{data: "2", event: "message"})
+    assert_receive(%EventsourceEx.Message{id: "3", data: "3", event: "message"})
+    assert_receive(%EventsourceEx.Message{id: "4", data: "4", event: "message"})
+    assert_receive(%EventsourceEx.Message{data: "five", event: "message"})
 
     verify!()
   end
