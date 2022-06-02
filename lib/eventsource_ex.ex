@@ -36,16 +36,17 @@ defmodule EventsourceEx do
   def handle_info(%{chunk: data}, %{parent: parent, message: message, prev_chunk: prev_chunk}) do
     data = if prev_chunk, do: prev_chunk <> data, else: data
 
-    if String.ends_with?(data, "\n") do
-      data = String.split(data, "\n")
+    lines = String.split(data, ~r/^/m, trim: true)
+    {prev_chunk, lines} =
+      if not String.ends_with?(data, "\n") do
+        List.pop_at(lines, -1)
+      else
+        {nil, lines}
+      end
 
-      message = parse_stream(data, parent, message)
+    message = parse_stream(lines, parent, message)
 
-      {:noreply, %{parent: parent, message: message, prev_chunk: nil}}
-    else
-      # Chunk didn't end with newline - assume data was cut and append next chunk
-      {:noreply, %{parent: parent, message: message, prev_chunk: data}}
-    end
+    {:noreply, %{parent: parent, message: message, prev_chunk: prev_chunk}}
   end
 
   def handle_info(%HTTPoison.AsyncEnd{}, state) do
@@ -57,7 +58,7 @@ defmodule EventsourceEx do
     {:noreply, state}
   end
 
-  defp parse_stream(["" | data], parent, message) do
+  defp parse_stream(["\n" | data], parent, message) do
     if message.data, do: dispatch(parent, message)
     parse_stream(data, parent, %EventsourceEx.Message{})
   end
@@ -68,6 +69,7 @@ defmodule EventsourceEx do
   defp parse_stream([], _, message), do: message
 
   defp parse(raw_line, message) do
+    raw_line = String.trim_trailing(raw_line, "\n")
     case raw_line do
       ":" <> _ -> message
       line ->
