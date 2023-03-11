@@ -14,6 +14,7 @@ defmodule EventsourceEx do
   end
 
   defp parse_options(opts) do
+    method = opts[:method] || :get
     url = opts[:url]
     headers = opts[:headers] || []
     parent = opts[:stream_to]
@@ -30,13 +31,23 @@ defmodule EventsourceEx do
       recv_timeout: :infinity
     ]
 
-    {url, headers, parent, adapter, Enum.filter(http_options, fn {_, val} -> val != nil end)}
+    {url, headers, parent, adapter, Enum.reject(http_options, fn {_, val} -> is_nil(val) end),
+     method}
   end
 
   def init(opts \\ []) do
-    {url, headers, parent, adapter, options} = parse_options(opts)
+    {url, headers, parent, adapter, options, method} = parse_options(opts)
     Logger.debug(fn -> "starting stream with http options: #{inspect(options)}" end)
-    adapter.get!(url, headers, options)
+
+    if method == :post do
+      body = Keyword.get(opts, :body, "")
+
+      [url: url, body: body, headers: headers, options: options]
+
+      adapter.post!(url, body, headers, options)
+    else
+      adapter.get!(url, headers, options)
+    end
 
     {:ok, %{parent: parent, message: %EventsourceEx.Message{}, prev_chunk: nil}}
   end
