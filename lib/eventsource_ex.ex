@@ -70,7 +70,7 @@ defmodule EventsourceEx do
   end
 
   def handle_info(%HTTPoison.AsyncEnd{}, state) do
-    {:stop, :connection_terminated, state}
+    {:stop, :normal, state}
   end
 
   def handle_info(_msg, state) do
