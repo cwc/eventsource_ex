@@ -21,3 +21,5 @@ An Elixir EventSource (Server-Sent Events) client
     %EventsourceEx.Message{data: "2", event: "message", id: nil}
     %EventsourceEx.Message{data: "3", event: "message", id: nil}
     :ok
+
+See [eventsource_ex_chatgpt.exs](https://github.com/wojtekmach/mix_install_examples/blob/main/eventsource_ex_chatgpt.exs) in `mix_install_examples` for a script using `eventsource_ex` to stream a response from ChatGPT.
