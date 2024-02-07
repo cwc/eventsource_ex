@@ -55,7 +55,7 @@ defmodule EventsourceEx do
   def handle_info(%{chunk: data}, %{parent: parent, message: message, prev_chunk: prev_chunk}) do
     data = if prev_chunk, do: prev_chunk <> data, else: data
 
-    lines = String.split(data, ~r/^/m, trim: true)
+    lines = data |> String.replace("\r", "") |> String.split(~r/^/m, trim: true)
 
     {prev_chunk, lines} =
       if not String.ends_with?(data, "\n") do
